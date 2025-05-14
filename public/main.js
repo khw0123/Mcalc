@@ -70,7 +70,7 @@ const McalcCompound = {
   },
   McalcCompoundQtoY: function (A, r, n) {
     let R = 0.01 * r;
-    let s = A * (1 + R / 4) ** (4 * n);
+    let s = A * (1 + R / 4) ** n;
     return s;
   },
   McalcCompoundQtoQ: function (A, r, n) {
@@ -85,7 +85,7 @@ const McalcCompound = {
   },
   McalcCompoundMtoY: function (A, r, n) {
     let R = 0.01 * r;
-    let s = A * (1 + R / 12) ** (12 * n);
+    let s = A * (1 + R / 12) ** n;
     return s;
   },
   McalcCompoundMtoM: function (A, r, n) {
