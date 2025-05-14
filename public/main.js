@@ -51,51 +51,51 @@ const McalcSimple = {
 };
 
 const McalcCompound = {
-  McalcCompoundYtoY: function (A, r, n) {
+  McalcCompoundYtoY: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R) ** n;
+    let s = A * (1 + R) ** t;
     return s;
   },
-  McalcCompoundYtoQ: function (A, r, n) {
+  McalcCompoundYtoQ: function (A, r, t) {
     let R = 0.01 * r;
     let EAR = (1 + R) ** 4 - 1;
-    let s = A * (1 + EAR) ** n;
+    let s = A * (1 + EAR) ** t;
     return s;
   },
-  McalcCompoundYtoM: function (A, r, n) {
+  McalcCompoundYtoM: function (A, r, t) {
     let R = 0.01 * r;
     let EAR = (1 + R) ** 12 - 1;
-    let s = A * (1 + EAR) ** n;
+    let s = A * (1 + EAR) ** t;
     return s;
   },
-  McalcCompoundQtoY: function (A, r, n) {
+  McalcCompoundQtoY: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R / 4) ** n;
+    let s = A * (1 + R / 4) ** t;
     return s;
   },
-  McalcCompoundQtoQ: function (A, r, n) {
+  McalcCompoundQtoQ: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R) ** n;
+    let s = A * (1 + R) ** t;
     return s;
   },
-  McalcCompoundQtoM: function (A, r, n) {
+  McalcCompoundQtoM: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R * 3) ** n;
+    let s = A * (1 + R * 3) ** t;
     return s;
   },
-  McalcCompoundMtoY: function (A, r, n) {
+  McalcCompoundMtoY: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R / 12) ** n;
+    let s = A * (1 + R / 12) ** t;
     return s;
   },
-  McalcCompoundMtoM: function (A, r, n) {
+  McalcCompoundMtoM: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R) ** n;
+    let s = A * (1 + R) ** t;
     return s;
   },
-  McalcCompoundMtoQ: function (A, r, n) {
+  McalcCompoundMtoQ: function (A, r, t) {
     let R = 0.01 * r;
-    let s = A * (1 + R / 3) ** n;
+    let s = A * (1 + R / 3) ** t;
     return s;
   },
 };
@@ -104,6 +104,9 @@ SubmitBtn.addEventListener("click", function (event) {
   event.preventDefault();
   const selectedInterestType = CalcForm.querySelector(
     ".interest-box #type"
+  ).value;
+  const selectedCompoundingPeriod = CalcForm.querySelector(
+    "#compounding-period"
   ).value;
   const selectedUnitInput = CalcForm.querySelector(
     ".unit-box #unit-input"
@@ -117,6 +120,8 @@ SubmitBtn.addEventListener("click", function (event) {
   ).value;
   const inputMoney = CalcForm.querySelector(".money-box #money").value;
   resultType = "";
+  let calcDuration = 0;
+
   if (selectedInterestType === "Simple") {
     if (selectedUnitStandard === "Y") {
       if (selectedInterestRateStandard === "Y") {
@@ -143,42 +148,72 @@ SubmitBtn.addEventListener("click", function (event) {
         resultType = "SimpleBasic";
       }
     }
+    calcDuration = Number(selectedUnitInput);
   } else if (selectedInterestType === "Compound") {
-    if (selectedUnitStandard === "Y") {
-      if (selectedInterestRateStandard === "Y") {
-        resultType = "CompoundYtoY";
-      } else if (selectedInterestRateStandard === "Q") {
-        resultType = "CompoundYtoQ";
-      } else if (selectedInterestRateStandard === "M") {
-        resultType = "CompoundYtoM";
-      } else {
-        resultType = "fail"; // Y 기간에 Q, M 아닌 다른 이율 단위가 있다면 fail
-      }
-    } else if (selectedUnitStandard === "Q") {
-      if (selectedInterestRateStandard === "Y") {
-        resultType = "CompoundQtoY";
-      } else if (selectedInterestRateStandard === "Q") {
-        resultType = "CompoundQtoQ";
-      } else if (selectedInterestRateStandard === "M") {
-        resultType = "CompoundQtoM";
-      } else {
-        resultType = "fail"; // Q 기간에 Y, Q, M 아닌 다른 이율 단위가 있다면 fail
-      }
-    } else if (selectedUnitStandard === "M") {
-      if (selectedInterestRateStandard === "Y") {
-        resultType = "CompoundMtoY";
-      } else if (selectedInterestRateStandard === "M") {
-        resultType = "CompoundMtoM";
-      } else if (selectedInterestRateStandard === "Q") {
-        resultType = "CompoundMtoQ";
-      } else {
-        resultType = "fail"; // M 기간에 Y, Q, M 아닌 다른 이율 단위가 있다면 fail
-      }
+    let compoundingPeriodCode = "";
+    if (selectedCompoundingPeriod === "Yearly") {
+      compoundingPeriodCode = "Y";
+    } else if (selectedCompoundingPeriod === "Quarterly") {
+      compoundingPeriodCode = "Q";
+    } else if (selectedCompoundingPeriod === "Monthly") {
+      compoundingPeriodCode = "M";
+    }
+
+    if (!compoundingPeriodCode) {
+      resultType = "fail";
     } else {
-      resultType = "fail"; // Y, Q, M 아닌 다른 기간 단위가 있다면 fail
+      resultType =
+        "Compound" +
+        compoundingPeriodCode +
+        "to" +
+        selectedInterestRateStandard;
+
+      const inputDurationStandard = selectedUnitStandard;
+      const targetDurationStandard = compoundingPeriodCode;
+
+      let durationInInputUnit = Number(selectedUnitInput);
+
+      if (targetDurationStandard === inputDurationStandard) {
+        calculatedDuration = durationInInputUnit; // 단위 같으면 그대로
+      } else if (
+        targetDurationStandard === "Y" &&
+        inputDurationStandard === "Q"
+      ) {
+        calculatedDuration = durationInInputUnit / 4; // 분기를 년으로
+      } else if (
+        targetDurationStandard === "Y" &&
+        inputDurationStandard === "M"
+      ) {
+        calculatedDuration = durationInInputUnit / 12; // 개월을 년으로
+      } else if (
+        targetDurationStandard === "Q" &&
+        inputDurationStandard === "Y"
+      ) {
+        calculatedDuration = durationInInputUnit * 4; // 년을 분기로
+      } else if (
+        targetDurationStandard === "Q" &&
+        inputDurationStandard === "M"
+      ) {
+        calculatedDuration = durationInInputUnit / 3; // 개월을 분기로
+      } else if (
+        targetDurationStandard === "M" &&
+        inputDurationStandard === "Y"
+      ) {
+        calculatedDuration = durationInInputUnit * 12; // 년을 개월로
+      } else if (
+        targetDurationStandard === "M" &&
+        inputDurationStandard === "Q"
+      ) {
+        calculatedDuration = durationInInputUnit * 3; // 분기를 개월로
+      } else {
+        // 예상치 못한 기간 단위 조합이라면? (일단 fail로 처리)
+        resultType = "fail";
+        console.error(
+          `Unexpected duration unit conversion: from ${inputDurationStandard} to ${targetDurationStandard}`
+        );
+      }
     }
   } else {
-    // Simple, Compound 아닌 다른 InterestType
     resultType = "fail";
   }
   console.log("선택된 정보:", {
@@ -201,7 +236,7 @@ SubmitBtn.addEventListener("click", function (event) {
           result = McalcSimple[functionName](
             Number(inputMoney),
             Number(selectedInterestRateInput),
-            Number(selectedUnitInput)
+            calcDuration
           );
         } else {
           console.error(
@@ -217,7 +252,7 @@ SubmitBtn.addEventListener("click", function (event) {
           result = McalcCompound[functionName](
             Number(inputMoney),
             Number(selectedInterestRateInput),
-            Number(selectedUnitInput)
+            calcDuration
           );
         } else {
           console.error(
