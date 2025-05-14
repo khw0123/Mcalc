@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+}
+
+input {
+  border-radius: 8px;
+  width: 20em;
+  height: 2em;
+  margin: 1em auto;
+}
+
+select {
+  border-radius: 8px;
+  height: 2em;
+}
+
+button {
+  border-radius: 8px;
+  width: 28em;
+  height: 3em;
+  position: absolute;
+}
+
+.form-container {
+  background-color: #f2f2f2;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 30em;
+  height: 30em;
+  margin: 10em auto;
+  display: flex;
+  position: relative;
+}
+
+.result-text {
+  margin-top: 20px;
+  position: absolute;
+  bottom: 3em;
+}
+
+.result-text2 {
+  margin-top: 2px;
+  position: absolute;
+  bottom: 1.8em;
+}
+
+.title {
+  position: absolute;
+  top: 1em;
+}
+/*# sourceMappingURL=Mcalc.e5980c4e.css.map */
