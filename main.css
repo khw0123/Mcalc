@@ -1,0 +1,51 @@
+* {
+    box-sizing: border-box;
+}
+
+input {
+    border-radius: 8px;
+    width: 20em;
+    height: 2em;
+    margin: 1em auto;
+}
+
+select {
+    height: 2em;
+    border-radius: 8px;
+}
+
+button {
+    width: 28em;
+    height: 3em;
+    border-radius: 8px;
+    position: absolute;
+}
+
+.form-container {
+    width: 30em;
+    height: 30em;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10em auto;
+    border-radius: 20px;
+    position: relative;
+}
+
+.result-text {
+    margin-top: 20px;
+    position: absolute;
+    bottom: 3em;
+}
+
+.result-text2 {
+    margin-top: 2px;
+    position: absolute;
+    bottom: 1.8em;
+}
+
+.title {
+    position: absolute;
+    top: 1em;
+}
