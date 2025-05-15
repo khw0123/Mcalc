@@ -99,7 +99,6 @@ const McalcCompound = {
     return s;
   },
 };
-javascript;
 
 SubmitBtn.addEventListener("click", function (event) {
   event.preventDefault();
