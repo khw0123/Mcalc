@@ -5,7 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>이자율 계산기</title>
     <link rel="stylesheet" href="main.css" />
-    
+        <script type="module" defer src="./main.js"></script>
+    <script>
+      function changeLangSelect() {
+      const langSelect = document.getElementById("type");
+      const selectText = langSelect.options[langSelect.selectedIndex].text;
+      const targetBox = document.querySelector(".compounding-period-box");
+
+      if (selectText === "복리") {
+        targetBox.classList.add('compound-selected');
+      } else {
+        targetBox.classList.remove('compound-selected');
+      }
+    }
+
+    </script>
   </head>
 
   <body>
@@ -14,19 +28,19 @@
       <form id="start-calc">
         <div class="interest-box">
           <label for="#type">계산 방법</label>
-          <select name="type" id="type">
+          <select name="type" id="type" onchange="changeLangSelect()">
             <option value="Simple">단리</option>
             <option value="Compound">복리</option>
           </select>
         </div>
-              <div class="compounding-period-box">
+          <div class="compounding-period-box">
           <label for="compounding-period">복리 계산 주기</label>
-          <select name="compounding-period" id="compounding-period">
-              <option value="Yearly">연 복리</option>
-              <option value="Quarterly">분기 복리</option>
-              <option value="Monthly">월 복리</option>
-          </select>
-      </div>
+            <select name="compounding-period" id="compounding-period">
+                <option value="Yearly">연 복리</option>
+                <option value="Quarterly">분기 복리</option>
+                <option value="Monthly">월 복리</option>
+            </select>
+        </div>
         <div class="unit-box">
           <label for="unit-input">기간</label>
           <input type="text" id="unit-input" />
@@ -57,6 +71,5 @@
       </div>
     </div>
 
-    <script type="module" defer src="./main.js"></script>
   </body>
 </html>

@@ -49,3 +49,11 @@ button {
     position: absolute;
     top: 1em;
 }
+
+.compounding-period-box {
+    display: none;
+}
+
+.compound-selected {
+    display: block;
+}
