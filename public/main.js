@@ -99,36 +99,34 @@ const McalcCompound = {
     return s;
   },
 };
+javascript;
+
 SubmitBtn.addEventListener("click", function (event) {
   event.preventDefault();
 
-  // 사용자가 입력/선택한 값들을 변수에 저장
   const selectedInterestType = CalcForm.querySelector(
     ".interest-box #type"
   ).value;
-  // 새로 추가된 복리 계산 주기 선택 값 가져오기
   const selectedCompoundingPeriod = CalcForm.querySelector(
     "#compounding-period"
   ).value;
 
   const selectedUnitInput = CalcForm.querySelector(
     ".unit-box #unit-input"
-  ).value; // 기간 숫자
-  const selectedUnitStandard = CalcForm.querySelector(".unit-box #unit").value; // 기간 단위
+  ).value;
+  const selectedUnitStandard = CalcForm.querySelector(".unit-box #unit").value;
   const inputInterestRate = CalcForm.querySelector(
     ".interest-rate-box #interest-rate-input"
-  ).value; // 이율 숫자
+  ).value;
   const selectedInterestRateStandard = CalcForm.querySelector(
     ".interest-rate-box #interest-rate"
-  ).value; // 이율 단위
-  const inputMoney = CalcForm.querySelector(".money-box #money").value; // 원금
+  ).value;
+  const inputMoney = CalcForm.querySelector(".money-box #money").value;
 
-  // ⭐ 기간 계산 결과 저장 변수를 calcDuration으로 통일! ⭐
-  let calcDuration = 0; // 계산에 사용할 최종 기간 변수 초기화
+  let resultType = "";
+  let calcDuration = 0;
 
-  // 1. 사용자가 선택한 유형(단리/복리)에 따라 resultType 결정 및 기간 변환
   if (selectedInterestType === "Simple") {
-    // 단리는 복리 주기 선택과 상관 없이 기간 단위와 이율 단위로 함수 결정
     if (selectedUnitStandard === "Y") {
       if (selectedInterestRateStandard === "Y") {
         resultType = "SimpleBasic";
@@ -154,107 +152,92 @@ SubmitBtn.addEventListener("click", function (event) {
         resultType = "SimpleBasic";
       }
     }
-    // 단리 계산에서는 입력된 기간 숫자 그대로 calcDuration에 저장
     calcDuration = Number(selectedUnitInput);
   } else if (selectedInterestType === "Compound") {
-    // ⭐ 복리일 경우: 선택된 복리 주기와 이율 단위로 함수 결정!
     let compoundingPeriodCode = "";
     if (selectedCompoundingPeriod === "Yearly") compoundingPeriodCode = "Y";
     else if (selectedCompoundingPeriod === "Quarterly")
       compoundingPeriodCode = "Q";
     else if (selectedCompoundingPeriod === "Monthly")
       compoundingPeriodCode = "M";
-    // TODO: 만약 일 복리 등을 추가한다면 여기에 해당 로직 추가
 
     if (!compoundingPeriodCode) {
-      // 복리 주기 선택이 유효하지 않으면
       resultType = "fail";
     } else {
-      // 함수 이름 조합: Compound + [복리 주기 코드] + to + [이율 단위]
       resultType =
         "Compound" +
         compoundingPeriodCode +
         "to" +
         selectedInterestRateStandard;
 
-      // ⭐ 복리 계산에 사용할 기간 숫자를 '복리 계산 주기' 단위로 변환하여 calcDuration에 저장!
-      const inputDurationStandard = selectedUnitStandard; // 사용자가 입력한 기간 단위 (Y, Q, M)
-      const targetDurationStandard = compoundingPeriodCode; // 변환하려는 목표 단위 (복리 주기 단위 Y, Q, M)
+      const inputDurationStandard = selectedUnitStandard;
+      const targetDurationStandard = compoundingPeriodCode;
 
-      let durationInInputUnit = Number(selectedUnitInput); // 사용자가 입력한 기간 숫자
+      let durationInInputUnit = Number(selectedUnitInput);
 
       if (targetDurationStandard === inputDurationStandard) {
-        calcDuration = durationInInputUnit; // 단위 같으면 그대로 calcDuration에 저장
+        calcDuration = durationInInputUnit;
       } else if (
         targetDurationStandard === "Y" &&
         inputDurationStandard === "Q"
       ) {
-        calcDuration = durationInInputUnit / 4; // 분기를 년으로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit / 4;
       } else if (
         targetDurationStandard === "Y" &&
         inputDurationStandard === "M"
       ) {
-        calcDuration = durationInInputUnit / 12; // 개월을 년으로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit / 12;
       } else if (
         targetDurationStandard === "Q" &&
         inputDurationStandard === "Y"
       ) {
-        calcDuration = durationInInputUnit * 4; // 년을 분기로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit * 4;
       } else if (
         targetDurationStandard === "Q" &&
         inputDurationStandard === "M"
       ) {
-        calcDuration = durationInInputUnit / 3; // 개월을 분기로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit / 3;
       } else if (
         targetDurationStandard === "M" &&
         inputDurationStandard === "Y"
       ) {
-        calcDuration = durationInInputUnit * 12; // 년을 개월로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit * 12;
       } else if (
         targetDurationStandard === "M" &&
         inputDurationStandard === "Q"
       ) {
-        calcDuration = durationInInputUnit * 3; // 분기를 개월로 변환해서 calcDuration에 저장
+        calcDuration = durationInInputUnit * 3;
       } else {
-        // 예상치 못한 기간 단위 조합이라면? (일단 fail로 처리)
         resultType = "fail";
-        console.error(
-          `Unexpected duration unit conversion: from ${inputDurationStandard} to ${targetDurationStandard}`
-        );
       }
-      // TODO: 1년 미만 기간의 연복리 처리 (소수 지수)는 McalcCompoundYtoY 함수 내부에서 알아서 처리됨.
-      // 만약 1년 미만일 때 단리처럼 계산하고 싶다면 여기에 추가 로직 필요. (보통은 복리는 소수 지수 계산)
     }
   } else {
-    // Simple, Compound 아닌 다른 InterestType (이런 경우는 없겠지만)
     resultType = "fail";
   }
 
-  // 디버깅을 위해 선택된 정보와 결정된 resultType, 계산에 사용할 기간 출력
   console.log("선택된 정보:", {
     InterestType: selectedInterestType,
-    CompoundingPeriod: selectedCompoundingPeriod, // 새 정보 추가
-    UnitInput: selectedUnitInput, // 사용자가 입력한 그대로의 기간 숫자
-    UnitStandard: selectedUnitStandard, // 사용자가 선택한 기간 단위
+    CompoundingPeriod: selectedCompoundingPeriod,
+    UnitInput: selectedUnitInput,
+    UnitStandard: selectedUnitStandard,
     InterestRateStandard: selectedInterestRateStandard,
     InterestRateInput: inputInterestRate,
     Money: inputMoney,
     ResultType: resultType,
-    CalculatedDuration_for_CalcFunction: calcDuration, // ⭐ 계산 함수에 전달될 최종 기간 값 (이름 변경됨!)
+    CalculatedDuration_for_CalcFunction: calcDuration,
   });
 
-  let result; // 계산 결과 (원리 합계)를 저장할 변수
+  let result;
 
-  // 2. resultType이 유효하면 계산 수행
   if (resultType && resultType !== "fail") {
     try {
       if (selectedInterestType === "Simple") {
         const functionName = "Mcalc" + resultType;
         if (McalcSimple[functionName]) {
           result = McalcSimple[functionName](
-            Number(inputMoney), // 원금 (숫자)
-            Number(inputInterestRate), // 이율 (숫자)
-            calcDuration // ⭐ 단리 계산 시에도 calcDuration 사용
+            Number(inputMoney),
+            Number(inputInterestRate),
+            calcDuration
           );
         } else {
           console.error(
@@ -265,12 +248,12 @@ SubmitBtn.addEventListener("click", function (event) {
           return;
         }
       } else if (selectedInterestType === "Compound") {
-        const functionName = "Mcalc" + resultType; // resultType은 이미 "CompoundYtoY" 형태
+        const functionName = "Mcalc" + resultType;
         if (McalcCompound[functionName]) {
           result = McalcCompound[functionName](
-            Number(inputMoney), // 원금 (숫자)
-            Number(inputInterestRate), // 이율 (숫자)
-            calcDuration // ⭐ 복리 계산 시에도 calcDuration 사용!
+            Number(inputMoney),
+            Number(inputInterestRate),
+            calcDuration
           );
         } else {
           console.error(
@@ -282,32 +265,25 @@ SubmitBtn.addEventListener("click", function (event) {
         }
       }
 
-      // ⭐⭐⭐ 계산 결과 표시 부분 수정 ⭐⭐⭐
-      // result 변수에는 계산된 원리 합계(숫자)가 들어있음
       if (result !== undefined && !isNaN(result)) {
-        // result가 undefined나 NaN이 아닐 때만 표시
         console.log("계산 결과 (원리 합계):", result);
 
-        const resultElement = document.querySelector(".result-text"); // 원리 합계 표시 요소
-        const resultElement2 = document.querySelector(".result-text2"); // 이자 표시 요소
+        const resultElement = document.querySelector(".result-text");
+        const resultElement2 = document.querySelector(".result-text2");
 
-        // 원리 합계 표시
         if (resultElement) {
-          resultElement.textContent = "원리 합계: " + result.toFixed(2) + "원"; // 소수점 둘째 자리까지 표시
+          resultElement.textContent = "원리 합계: " + result.toFixed(0) + "원";
         } else {
           console.warn("결과를 표시할 .result-text 요소를 찾을 수 없습니다.");
         }
 
-        // 이자 계산 및 표시
-        const inputMoneyNumber = Number(inputMoney); // 원금도 숫자로 변환해두자
-        // ⭐ 이자 계산: 원리 합계 (result) - 원금 (inputMoneyNumber)
+        const inputMoneyNumber = Number(inputMoney);
         const interestAmount = result - inputMoneyNumber;
 
         if (interestAmount !== undefined && !isNaN(interestAmount)) {
-          // 이자 금액도 유효할 때만 표시
           if (resultElement2) {
             resultElement2.textContent =
-              "총 이자: " + interestAmount.toFixed(2) + "원"; // 이자도 소수점 둘째 자리까지 표시
+              "총 이자: " + interestAmount.toFixed(0) + "원";
           } else {
             console.warn(
               "결과를 표시할 .result-text2 요소를 찾을 수 없습니다."
@@ -319,16 +295,13 @@ SubmitBtn.addEventListener("click", function (event) {
             interestAmount
           );
           if (resultElement2) {
-            // 이자 금액이 유효하지 않으면 이자 칸은 비워두거나 에러 표시
             resultElement2.textContent = "총 이자: 계산 불가";
           }
         }
       } else {
-        // 계산 결과가 유효하지 않은 경우 (result가 undefined 또는 NaN이라면)
-        console.error("Error: 계산 결과가 유효하지 않습니다:", result); // 어떤 값이 들어왔는지 로그에 찍어보자
+        console.error("Error: 계산 결과가 유효하지 않습니다:", result);
         alert("계산 처리 중 예상치 못한 오류가 발생했습니다.");
       }
-      // ⭐⭐⭐ 계산 결과 표시 부분 수정 끝 ⭐⭐⭐
     } catch (e) {
       console.error("계산 중 예외 발생:", e);
       alert("계산 처리 중 오류가 발생했습니다.");
